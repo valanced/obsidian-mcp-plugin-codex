@@ -2,7 +2,7 @@
   "id": "codex-obsidian-mcp",
   "name": "Codex Obsidian MCP",
   "minAppVersion": "1.6.6",
-  "description": "Expose an Obsidian vault to Codex and other MCP clients through a local, authenticated MCP server.",
+  "description": "Expose an Obsidian vault to Codex and other MCP clients through a configurable local MCP bridge.",
   "author": "Aaron Bockelie + valanced Codex fork",
   "authorUrl": "https://github.com/valanced/obsidian-mcp-plugin-codex",
   "isDesktopOnly": true,

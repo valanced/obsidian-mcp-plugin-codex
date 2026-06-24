@@ -1,238 +1,215 @@
-# Semantic Notes Vault MCP
+# Codex Obsidian MCP
 
-![GitHub stars](https://img.shields.io/github/stars/aaronsb/obsidian-mcp-plugin?style=social)
-![GitHub forks](https://img.shields.io/github/forks/aaronsb/obsidian-mcp-plugin?style=social)
-![Downloads](https://img.shields.io/github/downloads/aaronsb/obsidian-mcp-plugin/total?color=blue)
-![Latest Release](https://img.shields.io/github/v/release/aaronsb/obsidian-mcp-plugin?include_prereleases&label=version)
-![License](https://img.shields.io/github/license/aaronsb/obsidian-mcp-plugin)
+This repository is a Codex-focused fork of
+[aaronsb/obsidian-mcp-plugin](https://github.com/aaronsb/obsidian-mcp-plugin).
+The original project and its README remain the best reference for the upstream
+Obsidian plugin design; this README describes the Codex fork and how to connect
+it to Codex.
 
-📦 **[Available in the Obsidian Community Plugin directory →](https://community.obsidian.md/plugins/semantic-vault-mcp)**
+## What This Is
 
-**Give AI semantic agency over your knowledge graph**
+MCP means Model Context Protocol. It is a protocol that lets an AI client call
+external tools and read external resources through a structured JSON-RPC API.
+In this project there are two pieces:
 
-This plugin connects your Obsidian vault to AI assistants through MCP (Model Context Protocol), giving them the ability to understand and navigate your notes as a connected knowledge graph, not just isolated files. Through semantic hints and graph traversal, AI gains the agency to explore concepts, follow connections, and synthesize information across your entire vault.
+- The Obsidian plugin runs inside your local Obsidian app and exposes your vault
+  as a local MCP server.
+- The Codex plugin starts a small local stdio bridge. The bridge connects Codex
+  to the Obsidian MCP endpoint over HTTP or HTTPS.
 
-**MCP (Model Context Protocol)** is the open standard that lets AI assistants interact with external tools and data sources. This plugin works with any MCP-compatible client including:
-- Claude Desktop (Anthropic)
-- Claude Code/Continue.dev (VS Code)
-- Any platform that supports local MCP servers
+There is no hosted service in the middle. Codex talks to a local process, and
+that process talks to the Obsidian plugin URL you configure.
 
-## Quick Start
+## Fork Changes
 
-**Prerequisites:** an MCP-compatible AI client like Claude Desktop, Claude Code, or Continue.dev.
+- Obsidian plugin id: `codex-obsidian-mcp`
+- Display name: `Codex Obsidian MCP`
+- Codex marketplace package under `plugins/codex`
+- Configurable Codex bridge for HTTP and HTTPS
+- Codex env var for bearer auth: `OBSIDIAN_MCP_API_KEY`
+- `.mcpignore` path exclusions enabled by default
+- MCPB release artifact names:
+  - `codex-obsidian-mcp-<version>.mcpb`
+  - `codex-obsidian-mcp.mcpb`
 
-> ## 📦 ──drag──▶ 🤖💬
-> **Download the `.mcpb` bundle from the plugin's config page → drag it onto Claude Desktop → paste your key. Done.**
+The fork-specific code is intentionally small and centered around
+`src/codex-fork.ts`; see [ADAPTATION.md](ADAPTATION.md).
 
-For most people that's the entire setup. The numbered steps below spell it out, then cover other MCP clients.
+## Install The Obsidian Plugin
 
-### 1. Install the Plugin
-
-**Via Obsidian Community Plugins**
-- Open Settings → Community plugins → Browse
-- Search for "Semantic Notes Vault MCP"
-- Install and enable — or install straight from the [plugin listing](https://community.obsidian.md/plugins/semantic-vault-mcp)
-
-**Via BRAT** (for beta testing)
-- Install [BRAT](https://github.com/TfTHacker/obsidian42-brat)
-- Add beta plugin: `aaronsb/obsidian-mcp-plugin`
-
-### 2. Configure Your AI Client
-
-Three onboarding paths, ordered by audience. All three are also shown in the plugin's Settings tab with copy-ready values.
-
-**📦 → 🤖 Claude Desktop — one-click `.mcpb` install (recommended)**
-
-Download `obsidian-mcp-<version>.mcpb` — either from the plugin's **Settings** tab (button right on the config page) or the [latest release](https://github.com/aaronsb/obsidian-mcp-plugin/releases/latest) — then either drag it onto the Claude Desktop window or double-click it. Claude Desktop opens an install dialog with two fields — paste the URL and API key shown in the plugin's Settings tab, hit Save, and you're done.
-
-> *Cross-platform note:* `.mcpb` files install via Claude Desktop's bundled handler. If double-click doesn't trigger Claude on your system, drag the file onto Claude Desktop's window instead, or right-click → "Open with…" and pick Claude Desktop (then "always open with" if your OS asks). Behavior varies by platform: macOS usually auto-associates, Windows may need a one-time association, Linux varies by desktop environment.
-
-**Claude Code** — one command (copy the ready-made version with your API key from the plugin's Settings tab):
+Build the plugin:
 
 ```bash
-claude mcp add --transport http obsidian http://localhost:3001/mcp --header "Authorization: Bearer YOUR_API_KEY"
+npm install
+npm run build
 ```
 
-For HTTPS, use `https://localhost:3443/mcp` instead — see [Trusting the self-signed certificate](#trusting-the-self-signed-certificate) below. **Claude Code runs on Bun, which does not read the macOS system keychain**, so you will need to set `NODE_EXTRA_CA_CERTS`.
+Copy these files into your vault:
 
-**Other MCP clients (Cline, Continue, custom integrations, multi-vault setups)**
-
-Add an entry to the client's MCP config file — one entry per vault if you run multiple Obsidian instances on different ports:
-
-```json
-{
-  "mcpServers": {
-    "obsidian-vault": {
-      "transport": {
-        "type": "http",
-        "url": "http://localhost:3001/mcp",
-        "headers": {
-          "Authorization": "Bearer YOUR_API_KEY"
-        }
-      }
-    }
-  }
-}
+```text
+<vault>/.obsidian/plugins/codex-obsidian-mcp/
+  main.js
+  manifest.json
+  styles.css
 ```
 
-**Advanced: custom `.mcpb` per vault**
+Then open Obsidian and enable `Codex Obsidian MCP` in:
 
-For multi-vault setups that want one-click install per vault, clone this repo and run the maker:
+```text
+Settings -> Community plugins
+```
+
+## Obsidian Server Settings
+
+Open the plugin settings inside Obsidian. The important values are:
+
+| Setting | Meaning | Default |
+| --- | --- | --- |
+| HTTP server | Local MCP endpoint over plain HTTP | `http://localhost:3001/mcp` |
+| HTTPS server | Local MCP endpoint over TLS | `https://localhost:3443/mcp` |
+| API key | Bearer token required by MCP clients | generated by the plugin |
+| Read-only mode | Prevents write/edit tools from mutating the vault | recommended for first test |
+| `.mcpignore` | Excludes private or internal paths from MCP access | enabled in this fork |
+
+The port comes from the Obsidian plugin settings. If you change the HTTP or
+HTTPS port there, configure Codex to use the same port.
+
+## Install The Codex Plugin
+
+Add this repository as a Codex plugin marketplace:
+
+```text
+Source: https://github.com/valanced/obsidian-mcp-plugin-codex
+Git ref: main
+Sparse paths: leave empty, or use ".agents/plugins/marketplace.json" and "plugins/codex"
+```
+
+Install and enable `codex-obsidian-mcp` from that marketplace.
+
+## Configure Codex
+
+If the Codex install dialog shows connection fields, fill them from the
+Obsidian plugin settings. Use the full URL field when possible:
+
+```text
+URL: http://localhost:3001/mcp
+API key: paste-api-key-from-obsidian-settings
+```
+
+The same configuration is also available through environment variables:
 
 ```bash
-node scripts/make-mcpb.mjs
-# Prompts for display name, URL, and API key
-# Outputs obsidian-mcp-<slug>.mcpb with everything pre-filled
+export OBSIDIAN_MCP_URL="http://localhost:3001/mcp"
+export OBSIDIAN_MCP_API_KEY="paste-api-key-from-obsidian-settings"
 ```
 
-Drop the resulting bundle into Claude Desktop and click Install — no fields to type.
-
-### Trusting the self-signed certificate
-
-The plugin's HTTPS server uses a self-signed certificate auto-generated on first start and stored under `.obsidian/plugins/semantic-vault-mcp/certificates/default.crt` inside your vault. MCP clients reject self-signed certificates by default, so you need to explicitly trust it before connecting over HTTPS. Pick the method that matches your client runtime.
-
-**macOS Keychain** (for clients that use the system trust store — Claude Desktop, browser-based tools, Node with `--use-system-ca`):
+For HTTPS:
 
 ```bash
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain \
-  /path/to/vault/.obsidian/plugins/semantic-vault-mcp/certificates/default.crt
+export OBSIDIAN_MCP_URL="https://localhost:3443/mcp"
+export OBSIDIAN_MCP_API_KEY="paste-api-key-from-obsidian-settings"
+export NODE_EXTRA_CA_CERTS="/path/to/vault/.obsidian/plugins/codex-obsidian-mcp/certificates/default.crt"
 ```
 
-**`NODE_EXTRA_CA_CERTS`** (required for Claude Code and other Bun-based runtimes):
+You can also configure the URL by parts:
 
-Bun does **not** consult the macOS system keychain for TLS trust, so trusting the certificate via Keychain Access alone has no effect — this is almost always the real reason an HTTPS connection from Claude Code fails. Bun only honors certificates listed in `NODE_EXTRA_CA_CERTS`:
+| Variable | Default | Example |
+| --- | --- | --- |
+| `OBSIDIAN_MCP_PROTOCOL` | `http` | `https` |
+| `OBSIDIAN_MCP_HOST` | `localhost` | `127.0.0.1` |
+| `OBSIDIAN_MCP_PORT` | `3001` for HTTP, `3443` for HTTPS | `3010` |
+| `OBSIDIAN_MCP_PATH` | `/mcp` | `/mcp` |
+| `OBSIDIAN_MCP_API_KEY` | empty | `...` |
+| `OBSIDIAN_MCP_AUTHORIZATION` | derived from API key | `Bearer ...` |
+
+`OBSIDIAN_MCP_URL` wins over the split protocol/host/port/path variables.
+`OBSIDIAN_MCP_AUTHORIZATION` wins over `OBSIDIAN_MCP_API_KEY` when you need to
+provide the whole `Authorization` header yourself.
+
+If Codex is launched as a macOS GUI app, it may not inherit variables exported
+in a terminal. In that case, set them with `launchctl` and restart Codex:
 
 ```bash
-# Point directly at the plugin cert, or append it to an existing CA bundle:
-export NODE_EXTRA_CA_CERTS=/path/to/vault/.obsidian/plugins/semantic-vault-mcp/certificates/default.crt
-
-# Propagate to GUI apps launched from the macOS dock (including Claude Code):
-launchctl setenv NODE_EXTRA_CA_CERTS /path/to/vault/.obsidian/plugins/semantic-vault-mcp/certificates/default.crt
+launchctl setenv OBSIDIAN_MCP_URL "http://localhost:3001/mcp"
+launchctl setenv OBSIDIAN_MCP_API_KEY "paste-api-key-from-obsidian-settings"
 ```
 
-Re-run these whenever the plugin regenerates its certificate (e.g. after the 1-year validity expires).
+For HTTPS, also set `NODE_EXTRA_CA_CERTS` through `launchctl`.
 
-> **Avoid `NODE_TLS_REJECT_UNAUTHORIZED=0`.** It disables TLS verification process-wide — for *every* HTTPS connection the client makes, not just this plugin — and masks legitimate certificate problems (expired, revoked, tampered). Trust the certificate explicitly instead.
+## How The Bridge Works
 
-### 3. Start Using
+Codex loads `plugins/codex/.mcp.json`, which starts:
 
-Once connected, simply chat with your AI assistant about your notes! For example:
-- "What are my recent thoughts on project X?"
-- "Find connections between my psychology and philosophy notes"
-- "Summarize my meeting notes from this week"
-- "Create a new note linking my ideas about Y"
-
-Your AI assistant now has these capabilities:
-- Navigate your vault's link structure
-- Search across all notes semantically
-- Read, edit, and create notes
-- Analyze your knowledge graph
-- Work with Dataview queries (if installed)
-- Manage Obsidian Bases (database views)
-
-## Why Semantic MCP?
-
-Traditional file access gives AI a narrow view - one document at a time. This plugin transforms that into **semantic agency**:
-
-- **Graph Navigation**: AI follows links between notes, understanding relationships and context
-- **Concept Discovery**: Semantic search finds related ideas across your vault
-- **Contextual Awareness**: AI understands where information lives in your knowledge structure
-- **Intelligent Synthesis**: Combine fragments from multiple notes to answer complex questions
-
-## Core Tools
-
-The plugin provides 8 semantic tool groups that give AI comprehensive vault access:
-
-| Tool | Purpose | Key Actions |
-|------|---------|-------------|
-| **📁 vault** | File operations | list, read, create, search, move, split, combine |
-| **✏️ edit** | Content modification | window editing, append, patch sections |
-| **👁️ view** | Content display | view files, windows, active note |
-| **🕸️ graph** | Link navigation | traverse, find paths, analyze connections |
-| **💡 workflow** | Contextual hints | suggest next actions based on state |
-| **📊 dataview** | Query notes | Execute DQL queries (if installed) |
-| **🗃️ bases** | Database views | Query and export Bases (if available) |
-| **ℹ️ system** | Vault info | Server status, commands, web fetch |
-
-## Documentation
-
-Detailed documentation for each tool and feature:
-
-- [📁 Vault Operations](docs/tools/vault.md) - File management and search
-- [✏️ Edit Operations](docs/tools/edit.md) - Content modification strategies  
-- [🕸️ Graph Navigation](docs/tools/graph.md) - Link traversal and analysis
-- [📊 Dataview Integration](docs/tools/dataview.md) - Query language support
-- [🔐 Security & Authentication](docs/security.md) - API keys and permissions
-- [🔧 Configuration](docs/configuration.md) - Server settings and options
-- [❓ Troubleshooting](docs/troubleshooting.md) - Common issues and solutions
-
-## The Semantic Advantage
-
-This plugin doesn't just give AI access to files - it provides **semantic understanding**:
-
-### Example: Research Assistant
-```
-User: "Summarize my research on machine learning optimization"
-
-AI uses semantic tools to:
-1. Search for notes with ML optimization concepts
-2. Traverse graph to find related papers and techniques  
-3. Follow backlinks to discover applications
-4. Synthesize findings from multiple connected notes
+```bash
+node ./server.js
 ```
 
-### Example: Knowledge Explorer
-```
-User: "What connections exist between my notes on philosophy and cognitive science?"
+That bridge reads the configuration above and forwards MCP JSON-RPC messages to
+Obsidian. Defaults are still usable for the common local setup:
 
-AI uses graph tools to:
-1. Find notes tagged with both topics
-2. Analyze shared concepts via graph traversal
-3. Identify bridge notes that connect domains
-4. Map the conceptual overlap
+```text
+http://localhost:3001/mcp
 ```
 
-## Features
+But the bridge is not tied to that port. If Obsidian is listening on
+`http://localhost:3010/mcp`, set either:
 
-### Semantic Search
-- Advanced query operators: `tag:`, `path:`, `content:`
-- Regular expressions and phrase matching
-- Relevance ranking and snippet extraction
+```bash
+export OBSIDIAN_MCP_URL="http://localhost:3010/mcp"
+```
 
-### Graph Intelligence
-- Multi-hop traversal with depth control
-- Backlink and forward-link analysis
-- Path finding between concepts
-- Tag-based navigation
+or:
 
-### Content Operations
-- Fuzzy text matching for edits
-- Structure-aware modifications (headings, blocks)
-- Batch operations (split, combine, move)
-- Template support
+```bash
+export OBSIDIAN_MCP_PORT="3010"
+```
 
-### Integration
-- Dataview query execution
-- Bases database operations
-- Web content fetching
-- Read-only mode for safety
+## Verify
 
-## Plugin Settings
+With Obsidian open and the plugin enabled:
 
-Access settings via: Settings → Community plugins → Semantic MCP
+```bash
+codex plugin list
+codex mcp get obsidian
+```
 
-Key configuration options:
-- **Server Ports**: HTTP (3001) and HTTPS (3443)
-- **Authentication**: API key protection
-- **Security**: Path validation and permissions
-- **Performance**: Connection pooling and caching
+You should see `codex-obsidian-mcp` installed and an `obsidian` MCP server using
+stdio. In a Codex chat, mention the plugin and ask it to list or search vault
+notes.
 
-## Support
+## Safety
 
-- **Issues**: [GitHub Issues](https://github.com/aaronsb/obsidian-mcp-plugin/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/aaronsb/obsidian-mcp-plugin/discussions)
-- **Sponsor**: [GitHub Sponsors](https://github.com/sponsors/aaronsb)
+Start with read-only mode if you only want search and summaries. Keep a
+`.mcpignore` file in your vault root for paths Codex should not inspect:
+
+```gitignore
+.obsidian/
+.git/
+.trash/
+private/
+journal/
+diary/
+```
+
+The API key is a local bearer token. Treat it like a password for your vault
+MCP server.
+
+## Troubleshooting
+
+`fetch failed` or `connection refused` usually means Obsidian is closed, the
+Obsidian plugin is disabled, or Codex is pointing at the wrong port.
+
+`401` or `403` usually means the API key in Codex does not match the key shown
+in Obsidian settings.
+
+HTTPS failures usually mean the self-signed certificate is not trusted by the
+Node.js process running the bridge. Set `NODE_EXTRA_CA_CERTS` to the generated
+certificate path shown above.
+
+If changing environment variables does not affect Codex, restart Codex. On
+macOS GUI launches, prefer `launchctl setenv`.
 
 ## License
 
-[MIT](LICENSE)
+MIT. Upstream copyright and license details are preserved from
+[aaronsb/obsidian-mcp-plugin](https://github.com/aaronsb/obsidian-mcp-plugin).

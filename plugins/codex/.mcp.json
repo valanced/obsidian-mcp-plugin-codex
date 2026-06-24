@@ -1,11 +1,30 @@
 {
   "mcpServers": {
     "obsidian": {
-      "type": "http",
-      "url": "http://localhost:3001/mcp",
-      "headers": {
-        "Authorization": "Bearer ${OBSIDIAN_MCP_API_KEY}"
-      }
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "./server.js"
+      ],
+      "cwd": ".",
+      "env": {
+        "CODEX_OBSIDIAN_MCP_URL": "${user_config.url}",
+        "CODEX_OBSIDIAN_MCP_PROTOCOL": "${user_config.protocol}",
+        "CODEX_OBSIDIAN_MCP_HOST": "${user_config.host}",
+        "CODEX_OBSIDIAN_MCP_PORT": "${user_config.port}",
+        "CODEX_OBSIDIAN_MCP_PATH": "${user_config.path}",
+        "CODEX_OBSIDIAN_MCP_API_KEY": "${user_config.api_key}"
+      },
+      "env_vars": [
+        "OBSIDIAN_MCP_URL",
+        "OBSIDIAN_MCP_PROTOCOL",
+        "OBSIDIAN_MCP_HOST",
+        "OBSIDIAN_MCP_PORT",
+        "OBSIDIAN_MCP_PATH",
+        "OBSIDIAN_MCP_API_KEY",
+        "OBSIDIAN_MCP_AUTHORIZATION",
+        "NODE_EXTRA_CA_CERTS"
+      ]
     }
   }
 }

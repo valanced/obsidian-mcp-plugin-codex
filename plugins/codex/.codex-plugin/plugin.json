@@ -1,12 +1,12 @@
 {
   "name": "codex-obsidian-mcp",
-  "version": "0.11.33",
-  "description": "Expose an Obsidian vault to Codex and other MCP clients through a local, authenticated MCP server.",
+  "version": "0.11.33+codex.20260624.095815",
+  "description": "Expose an Obsidian vault to Codex and other MCP clients through a configurable local MCP bridge.",
   "author": {
     "name": "Aaron Bockelie + valanced Codex fork",
     "url": "https://github.com/valanced"
   },
-  "homepage": "https://github.com/valanced/obsidian-mcp-plugin-codex/blob/main/README.codex.md",
+  "homepage": "https://github.com/valanced/obsidian-mcp-plugin-codex#readme",
   "repository": "https://github.com/valanced/obsidian-mcp-plugin-codex",
   "license": "MIT",
   "keywords": [
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Codex Obsidian MCP",
     "shortDescription": "Connect Codex to your local Obsidian vault",
-    "longDescription": "Adds a Codex MCP server entry for the local HTTP endpoint exposed by the Codex Obsidian MCP Obsidian plugin. Start Obsidian, enable the plugin, and set OBSIDIAN_MCP_API_KEY before use.",
+    "longDescription": "Adds a configurable Codex MCP bridge for the local HTTP or HTTPS endpoint exposed by the Codex Obsidian MCP Obsidian plugin. Start Obsidian, enable the plugin, then configure OBSIDIAN_MCP_URL or OBSIDIAN_MCP_PROTOCOL/HOST/PORT/PATH plus OBSIDIAN_MCP_API_KEY.",
     "developerName": "valanced",
     "category": "Productivity",
     "capabilities": [

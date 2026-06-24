@@ -26,12 +26,20 @@ try {
   writeFileSync('mcpb/manifest.json', JSON.stringify(mcpbManifest, null, 2) + '\n');
 
   // Read and update Codex plugin manifests, when present.
+  const versionWithExistingBuildMetadata = (existingVersion) => {
+    if (typeof existingVersion !== 'string') return version;
+    const buildMetadataIndex = existingVersion.indexOf('+');
+    return buildMetadataIndex === -1
+      ? version
+      : `${version}${existingVersion.slice(buildMetadataIndex)}`;
+  };
+
   for (const codexManifestPath of [
     '.codex-plugin/plugin.json',
     'plugins/codex/.codex-plugin/plugin.json',
   ]) {
     const codexPluginManifest = JSON.parse(readFileSync(codexManifestPath, 'utf-8'));
-    codexPluginManifest.version = version;
+    codexPluginManifest.version = versionWithExistingBuildMetadata(codexPluginManifest.version);
     codexPluginManifest.description = description;
     writeFileSync(codexManifestPath, JSON.stringify(codexPluginManifest, null, 2) + '\n');
   }

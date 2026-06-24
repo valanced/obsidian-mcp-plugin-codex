@@ -1,7 +1,7 @@
 {
   "name": "codex-obsidian-mcp-plugin",
   "version": "0.11.33",
-  "description": "Expose an Obsidian vault to Codex and other MCP clients through a local, authenticated MCP server.",
+  "description": "Expose an Obsidian vault to Codex and other MCP clients through a configurable local MCP bridge.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
