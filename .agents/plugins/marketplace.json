@@ -1,0 +1,22 @@
+{
+  "name": "codex-obsidian-mcp",
+  "interface": {
+    "displayName": "Codex Obsidian MCP"
+  },
+  "plugins": [
+    {
+      "name": "codex-obsidian-mcp",
+      "displayName": "Codex Obsidian MCP",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "Connect Codex to a local Obsidian vault through the Codex Obsidian MCP plugin."
+    }
+  ]
+}

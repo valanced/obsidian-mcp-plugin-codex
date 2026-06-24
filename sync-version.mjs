@@ -25,11 +25,16 @@ try {
   mcpbManifest.version = version;
   writeFileSync('mcpb/manifest.json', JSON.stringify(mcpbManifest, null, 2) + '\n');
 
-  // Read and update Codex plugin manifest, when present.
-  const codexPluginManifest = JSON.parse(readFileSync('.codex-plugin/plugin.json', 'utf-8'));
-  codexPluginManifest.version = version;
-  codexPluginManifest.description = description;
-  writeFileSync('.codex-plugin/plugin.json', JSON.stringify(codexPluginManifest, null, 2) + '\n');
+  // Read and update Codex plugin manifests, when present.
+  for (const codexManifestPath of [
+    '.codex-plugin/plugin.json',
+    'plugins/codex/.codex-plugin/plugin.json',
+  ]) {
+    const codexPluginManifest = JSON.parse(readFileSync(codexManifestPath, 'utf-8'));
+    codexPluginManifest.version = version;
+    codexPluginManifest.description = description;
+    writeFileSync(codexManifestPath, JSON.stringify(codexPluginManifest, null, 2) + '\n');
+  }
 
   // Update version.ts
   const versionTs = `// Version is injected at build time by sync-version.mjs
@@ -39,7 +44,7 @@ export function getVersion(): string {
 `;
   writeFileSync('src/version.ts', versionTs);
 
-  console.log(`✅ Synced version ${version} + description to manifest.json and .codex-plugin/plugin.json (version also: mcpb/manifest.json, version.ts)`);
+  console.log(`✅ Synced version ${version} + description to manifest.json and Codex plugin manifests (version also: mcpb/manifest.json, version.ts)`);
 } catch (error) {
   console.error('❌ Failed to sync version:', error.message);
   process.exit(1);

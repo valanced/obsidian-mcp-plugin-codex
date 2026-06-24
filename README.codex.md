@@ -70,15 +70,23 @@ default_tools_approval_mode = "prompt"
 
 ## Install As A Codex Plugin
 
-This repository also includes a Codex plugin descriptor:
+This repository also includes a Codex marketplace descriptor:
 
-- `.codex-plugin/plugin.json`
-- `.mcp.json`
+- `.agents/plugins/marketplace.json`
+- `plugins/codex/.codex-plugin/plugin.json`
+- `plugins/codex/.mcp.json`
 
 The Codex plugin points to the local Obsidian MCP endpoint at
 `http://localhost:3001/mcp` and sends `Authorization: Bearer
 ${OBSIDIAN_MCP_API_KEY}`. Start Obsidian and set `OBSIDIAN_MCP_API_KEY` before
 using the plugin from Codex.
+
+To add the marketplace in Codex:
+
+- Source: `https://github.com/valanced/obsidian-mcp-plugin-codex`
+- Git ref: `main`
+- Sparse paths: leave empty, or include both `.agents/plugins/marketplace.json`
+  and `plugins/codex`
 
 ## Safety
 
