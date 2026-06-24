@@ -5,6 +5,7 @@ import { createServer as createHttpServer, Server as HttpServer } from 'http';
 import { createServer as createHttpsServer, Server as HttpsServer, ServerOptions } from 'https';
 import { Application } from 'express';
 import { Debug } from './debug';
+import { CODEX_FORK, codexForkValue } from '../codex-fork';
 import * as forge from 'node-forge';
 
 export interface CertificateConfig {
@@ -44,7 +45,7 @@ export class CertificateManager {
       basePath,
       app.vault.configDir,
       'plugins',
-      'semantic-vault-mcp',
+      codexForkValue('semantic-vault-mcp', CODEX_FORK.pluginId),
       'certificates'
     );
     this.ensureCertDirectory();

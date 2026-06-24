@@ -1,5 +1,6 @@
 import { App } from 'obsidian';
 import { Debug } from './utils/debug';
+import { CODEX_FORK, codexForkValue } from './codex-fork';
 
 interface MCPRequestParams {
   name?: string;
@@ -109,7 +110,7 @@ export class BrowserMCPServer {
         'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
-        name: 'Semantic Notes Vault MCP',
+        name: codexForkValue('Semantic Notes Vault MCP', CODEX_FORK.displayName),
         version: '0.1.3',
         status: 'running',
         vault: this.app.vault.getName(),

@@ -10,7 +10,7 @@ on:
     branches: [ main ]
 
 env:
-  PLUGIN_NAME: obsidian-mcp-plugin
+  PLUGIN_NAME: codex-obsidian-mcp-plugin
 
 permissions:
   contents: read

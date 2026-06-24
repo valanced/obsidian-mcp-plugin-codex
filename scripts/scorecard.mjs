@@ -17,7 +17,7 @@
 import { readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
-const SLUG = 'semantic-vault-mcp';
+const SLUG = 'codex-obsidian-mcp';
 const URL = `https://community.obsidian.md/plugins/${SLUG}`;
 
 // The portal is a Next.js App Router page. After Obsidian's 2026 redesign

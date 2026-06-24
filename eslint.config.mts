@@ -80,6 +80,8 @@ export default tseslint.config(
 		"tsconfig.json",
 		"package-lock.json",
 		"manifest.json",
+		".codex-plugin/**",
+		".mcp.json",
 		"versions.json",
 		".claude/**",
 		"src/config/**/*.json",

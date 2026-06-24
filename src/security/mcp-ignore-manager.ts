@@ -1,6 +1,7 @@
 import { App } from 'obsidian';
 import { Minimatch } from 'minimatch';
 import { Debug } from '../utils/debug';
+import { codexDefaultIgnoreBlock } from '../codex-fork';
 
 /**
  * MCPIgnoreManager - Handles .mcpignore file-based path exclusions
@@ -202,6 +203,7 @@ export class MCPIgnoreManager {
 # Lines starting with # are comments
 # Use ! to negate/whitelist patterns
 
+${codexDefaultIgnoreBlock(this.app.vault.configDir)}
 # === PATTERN EXAMPLES ===
 # 
 # DIRECTORIES:

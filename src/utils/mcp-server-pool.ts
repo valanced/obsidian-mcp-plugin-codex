@@ -13,6 +13,7 @@ import { SecureObsidianAPI } from '../security/secure-obsidian-api';
 import { createSemanticTools } from '../tools/semantic-tools';
 import { DataviewTool, isDataviewToolAvailable } from '../tools/dataview-tool';
 import { getVersion } from '../version';
+import { CODEX_FORK, codexForkValue } from '../codex-fork';
 import type { SessionManager } from './session-manager';
 import type { ConnectionPool } from './connection-pool';
 
@@ -125,7 +126,7 @@ export class MCPServerPool extends EventEmitter {
       // symbol never appears in our source. We don't use registerTool/Zod.
       const mcpServer = new McpServer(
       {
-        name: 'Semantic Notes Vault MCP',
+        name: codexForkValue('Semantic Notes Vault MCP', CODEX_FORK.displayName),
         version: getVersion()
       },
       {

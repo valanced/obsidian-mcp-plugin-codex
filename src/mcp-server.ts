@@ -18,6 +18,7 @@ import { ConnectionPool, PooledRequest } from './utils/connection-pool';
 import { SessionManager } from './utils/session-manager';
 import { MCPServerPool } from './utils/mcp-server-pool';
 import { CertificateManager, CertificateConfig } from './utils/certificate-manager';
+import { CODEX_FORK, codexForkValue } from './codex-fork';
 import {
   classifyFromSettings,
   resolveListenHost,
@@ -316,7 +317,7 @@ export class MCPHttpServer {
     // Health check endpoint
     this.app.get('/', (req, res) => {
       const response = {
-        name: 'Semantic Notes Vault MCP',
+        name: codexForkValue('Semantic Notes Vault MCP', CODEX_FORK.displayName),
         version: getVersion(),
         status: 'running',
         vault: this.obsidianApp.vault.getName(),

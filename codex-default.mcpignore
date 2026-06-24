@@ -1,0 +1,19 @@
+# Recommended starter .mcpignore for Codex Obsidian MCP
+
+.obsidian/
+.git/
+.trash/
+
+# Common private areas. Rename/remove for your vault.
+private/
+journal/
+diary/
+
+# Local metadata and generated files.
+.DS_Store
+Thumbs.db
+*.tmp
+*.backup
+*.bak
+~*
+.#*

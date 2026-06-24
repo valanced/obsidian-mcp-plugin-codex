@@ -1,5 +1,6 @@
 import { Debug } from './utils/debug';
 import { App } from 'obsidian';
+import { CODEX_FORK, codexForkValue } from './codex-fork';
 import type { IncomingMessage, ServerResponse, Server } from 'http';
 
 interface MCPToolCallParams {
@@ -122,7 +123,7 @@ export class NodeMCPServer {
 
   private handleHealthCheck(_req: IncomingMessage, res: ServerResponse): void {
     const response = {
-      name: 'Semantic Notes Vault MCP',
+      name: codexForkValue('Semantic Notes Vault MCP', CODEX_FORK.displayName),
       version: '0.1.4',
       status: 'running',
       vault: this.app.vault.getName(),

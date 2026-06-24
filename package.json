@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-mcp-plugin",
+  "name": "codex-obsidian-mcp-plugin",
   "version": "0.11.33",
-  "description": "Give Claude Desktop and other AI assistants semantic access to your notes through a built-in Model Context Protocol (MCP) server.",
+  "description": "Expose an Obsidian vault to Codex and other MCP clients through a local, authenticated MCP server.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
@@ -18,9 +18,10 @@
     "mcp",
     "rest-api",
     "ai",
-    "semantic"
+    "semantic",
+    "codex"
   ],
-  "author": "Aaron Bockelie",
+  "author": "Aaron Bockelie + valanced Codex fork",
   "license": "MIT",
   "overrides": {
     "yaml": "$yaml"

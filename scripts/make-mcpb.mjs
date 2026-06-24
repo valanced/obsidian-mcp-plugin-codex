@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Interactive .mcpb maker for advanced users.
-// Prompts for name, url, api_key, then emits obsidian-mcp-<name>.mcpb
+// Prompts for name, url, api_key, then emits codex-obsidian-mcp-<name>.mcpb
 // using the same pure-Node zip helper as the canonical build.
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -21,7 +21,7 @@ try {
   console.log('Obsidian MCPB maker — generates a custom-named bundle for one vault.\n');
 
   const displayName = await ask('Display name shown in Claude Desktop', 'Obsidian (Work Vault)');
-  const slug = slugify(displayName) || 'obsidian-mcp-custom';
+  const slug = slugify(displayName) || 'codex-obsidian-mcp-custom';
   const url = await ask('Obsidian MCP URL', 'http://localhost:3001/mcp');
   const apiKey = await ask('API key (leave blank only if plugin auth is disabled)', '');
 
@@ -39,7 +39,7 @@ try {
     },
   };
 
-  const out = `obsidian-mcp-${slug}.mcpb`;
+  const out = `codex-obsidian-mcp-${slug}.mcpb`;
   writeFileSync(out, buildMcpb({ manifest, serverJs }));
   console.log(`\n✅ Built ${out}`);
   console.log(`   Drop it into Claude Desktop to install "${displayName}".`);

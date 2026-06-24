@@ -9,6 +9,7 @@ import { CertificateConfig } from './utils/certificate-manager';
 import { ValidationConfig } from './validation/input-validator';
 import { ALL_OPERATIONS, getActionsForOperation, getOperationDescription } from './tools/semantic-tools';
 import { BindMode, classifyFromSettings, normalizeBindInput } from './utils/network-classifier';
+import { CODEX_FORK, codexForkValue } from './codex-fork';
 
 interface MCPPluginSettings {
 	httpEnabled: boolean;
@@ -77,8 +78,8 @@ const DEFAULT_SETTINGS: MCPPluginSettings = {
 	apiKey: '', // Will be generated on first load
 	dangerouslyDisableAuth: false, // Auth enabled by default
 	readOnlyMode: false, // Read-only mode disabled by default
-	pathExclusionsEnabled: false, // Path exclusions disabled by default
-	enableIgnoreContextMenu: false, // Context menu disabled by default
+	pathExclusionsEnabled: codexForkValue(false, CODEX_FORK.defaults.pathExclusionsEnabled),
+	enableIgnoreContextMenu: codexForkValue(false, CODEX_FORK.defaults.enableIgnoreContextMenu),
 	validation: {
 		maxFileSize: 10 * 1024 * 1024, // 10MB default
 		maxBatchSize: 100,
@@ -99,7 +100,7 @@ export default class ObsidianMCPPlugin extends Plugin {
 	private statsUpdateInterval?: number;
 
 	async onload() {
-		Debug.log(`🚀 Starting Semantic Notes Vault MCP v${getVersion()}`);
+		Debug.log(`🚀 Starting ${codexForkValue('Semantic Notes Vault MCP', CODEX_FORK.displayName)} v${getVersion()}`);
 		
 		try {
 			// ADR-107: snapshot raw persisted data BEFORE loadSettings(),
@@ -1576,10 +1577,10 @@ class MCPSettingTab extends PluginSettingTab {
 
 		// Stable "latest" endpoint — always resolves to the most recent release
 		// asset regardless of whether this plugin build has a release yet.
-		const mcpbUrl = 'https://github.com/aaronsb/obsidian-mcp-plugin/releases/latest/download/obsidian-mcp.mcpb';
+		const mcpbUrl = codexForkValue('https://github.com/aaronsb/obsidian-mcp-plugin/releases/latest/download/obsidian-mcp.mcpb', CODEX_FORK.mcpbDownloadUrl);
 		const downloadEl = info.createDiv('mcpb-download');
 		const downloadLink = downloadEl.createEl('a', {
-			text: '⬇ Obsidian-mcp.mcpb',
+			text: codexForkValue('⬇ Obsidian-mcp.mcpb', CODEX_FORK.mcpbDownloadLabel),
 			href: mcpbUrl,
 			cls: 'mcp-mcpb-download',
 		});
@@ -1597,6 +1598,12 @@ class MCPSettingTab extends PluginSettingTab {
 			keyRow.createEl('strong', { text: 'API key: ' });
 			keyRow.createEl('code', { text: this.plugin.settings.apiKey, cls: 'mcp-code-inline' });
 			this.addCopyButton(keyRow, this.plugin.settings.apiKey);
+		}
+
+		if (CODEX_FORK.enabled) {
+			new Setting(info).setName("Codex").setHeading();
+			const codexExample = info.createDiv('codex-command-example');
+			this.renderCodexConnection(codexExample, baseUrl);
 		}
 
 		// === Claude Code ===
@@ -1671,6 +1678,25 @@ class MCPSettingTab extends PluginSettingTab {
 	 * Single source of truth for both the initial render and the live-refresh
 	 * handler, so the two cannot drift apart.
 	 */
+	private renderCodexConnection(container: HTMLElement, baseUrl: string): void {
+		container.empty();
+
+		if (!this.plugin.settings.dangerouslyDisableAuth) {
+			container.createEl('p', {
+				text: `Set ${CODEX_FORK.codexBearerEnvVar} to the API key above before starting Codex.`
+			});
+		}
+
+		const cmd = this.plugin.settings.dangerouslyDisableAuth
+			? `codex mcp add obsidian --url ${baseUrl}/mcp`
+			: `codex mcp add obsidian --url ${baseUrl}/mcp --bearer-token-env-var ${CODEX_FORK.codexBearerEnvVar}`;
+
+		const codeEl = container.createEl('code');
+		codeEl.classList.add('mcp-code-block');
+		codeEl.textContent = cmd;
+		this.addCopyButton(container, cmd);
+	}
+
 	private renderClaudeCodeConnection(container: HTMLElement, baseUrl: string): void {
 		container.empty();
 
@@ -1829,6 +1855,13 @@ class MCPSettingTab extends PluginSettingTab {
 			const baseUrl = `${protocol}://localhost:${port}`;
 
 			this.renderClaudeCodeConnection(protocolSection, baseUrl);
+		}
+		const codexSection = activeDocument.querySelector('.codex-command-example');
+		if (codexSection instanceof HTMLElement && info && CODEX_FORK.enabled) {
+			const protocol = this.plugin.settings.httpsEnabled ? 'https' : 'http';
+			const port = this.plugin.settings.httpsEnabled ? this.plugin.settings.httpsPort : info.httpPort;
+			const baseUrl = `${protocol}://localhost:${port}`;
+			this.renderCodexConnection(codexSection, baseUrl);
 		}
 		
 		// Update any other dynamic content areas that need live updates

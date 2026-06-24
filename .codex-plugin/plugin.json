@@ -1,0 +1,38 @@
+{
+  "name": "codex-obsidian-mcp",
+  "version": "0.11.33",
+  "description": "Expose an Obsidian vault to Codex and other MCP clients through a local, authenticated MCP server.",
+  "author": {
+    "name": "Aaron Bockelie + valanced Codex fork",
+    "url": "https://github.com/valanced"
+  },
+  "homepage": "https://github.com/valanced/obsidian-mcp-plugin-codex/blob/main/README.codex.md",
+  "repository": "https://github.com/valanced/obsidian-mcp-plugin-codex",
+  "license": "MIT",
+  "keywords": [
+    "obsidian",
+    "codex",
+    "mcp",
+    "notes",
+    "vault"
+  ],
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Codex Obsidian MCP",
+    "shortDescription": "Connect Codex to your local Obsidian vault",
+    "longDescription": "Adds a Codex MCP server entry for the local HTTP endpoint exposed by the Codex Obsidian MCP Obsidian plugin. Start Obsidian, enable the plugin, and set OBSIDIAN_MCP_API_KEY before use.",
+    "developerName": "valanced",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/valanced/obsidian-mcp-plugin-codex",
+    "defaultPrompt": [
+      "Search my Obsidian vault",
+      "Summarize notes from Obsidian",
+      "Draft edits for a vault note"
+    ],
+    "brandColor": "#4F6F8F"
+  }
+}

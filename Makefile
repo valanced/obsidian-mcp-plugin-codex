@@ -82,12 +82,12 @@ _commit-and-publish:
 # --- Utility ---
 
 clean: ## Remove build artifacts
-	rm -rf main.js main.js.map dist/ obsidian-mcp-*.mcpb obsidian-mcp.mcpb
+	rm -rf main.js main.js.map dist/ codex-obsidian-mcp-*.mcpb codex-obsidian-mcp.mcpb
 
 sync-version: ## Sync version + description from package.json to manifest.json, mcpb, version.ts
 	node sync-version.mjs
 
-mcpb: ## Build MCPB bundle (obsidian-mcp-<version>.mcpb) for Claude Desktop
+mcpb: ## Build MCPB bundle (codex-obsidian-mcp-<version>.mcpb) for desktop MCP clients
 	node scripts/build-mcpb.mjs
 
 scorecard: ## Pull the Obsidian community portal scorecard + freshness delta (free post-release signal)

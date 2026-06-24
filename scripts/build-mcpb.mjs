@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Pack mcpb/ into obsidian-mcp-<version>.mcpb using a stored-only zip
+// Pack mcpb/ into codex-obsidian-mcp-<version>.mcpb using a stored-only zip
 // container. Pure Node, no deps — works on any Node ≥18.
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -80,14 +80,14 @@ export function buildMcpb({ manifest, serverJs }) {
 
 // CLI: emit both a versioned bundle (for archival) and an unversioned
 // alias so the Settings UI / README can link to a stable
-// releases/latest/download/obsidian-mcp.mcpb URL regardless of plugin
+// releases/latest/download/codex-obsidian-mcp.mcpb URL regardless of plugin
 // version.
 if (import.meta.url === `file://${process.argv[1]}`) {
   const manifest = JSON.parse(readFileSync('mcpb/manifest.json', 'utf-8'));
   const serverJs = readFileSync('mcpb/server.js', 'utf-8');
   const bytes = buildMcpb({ manifest, serverJs });
-  const versioned = `obsidian-mcp-${manifest.version}.mcpb`;
-  const latest = 'obsidian-mcp.mcpb';
+  const versioned = `codex-obsidian-mcp-${manifest.version}.mcpb`;
+  const latest = 'codex-obsidian-mcp.mcpb';
   writeFileSync(versioned, bytes);
   writeFileSync(latest, bytes);
   console.log(`✅ Built ${versioned} and ${latest} (${manifest.version})`);
